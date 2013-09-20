@@ -1,0 +1,44 @@
+# Note that all packages and scripts will be installed/run in their order of appearance.
+# Please look at our documentation page for more information. You can find it at https://koalitycode.com/documentation?view=yaml
+
+languages:
+  jvm: 1.6
+setup:
+- packages:
+  - system:
+
+# Defines databases used for your tests. They are local to the VMs the tests are run on.
+# Currently, only postgres and mysql are supported. This configuration includes both.
+- databases:
+  - mysql:
+    - name: test_db
+      username: test_user
+  - postgres:
+    - name: test_db
+      username: test_user
+
+# Arbitrary scripts to run that were not covered earlier.
+- scripts:
+
+# The following section defines how to build your code. Each section can be given an arbitrary name.
+
+# Following this is our inferred guess as to what your compile section should look like.
+#################################################################
+compile:
+  scripts:
+  - mvn compile 0: {script: mvn compile}
+#################################################################
+# Defines how to parallelize and run your tests. All commands from here on will be executed in parallel.
+# NOTE: Scripts that do batch testing will not be parallelized.
+test:
+# Factory scripts that will output test scripts to be run in parallel.
+
+# Following this is our inferred guess as to what your factory section should look like.
+  factories:
+  - factory .:
+      path: .
+      script: ["find . -name \"*[tT]est*.java\" | sed \"s/.*\\/\\(.*\\).java/\\1/\"\
+          \ | while read java; do echo -e \"- mvn -Dtest=$java test:\n    path: .\"\
+          ; done"]
+#################################################################
+  machines: 8
